@@ -27,3 +27,4 @@ runpy.bat
 
 ### visit https://<ip>:8000/vms/api/vendors
 ![vendors](https://github.com/amar512-prog/VMS/blob/main/out.png)
+![vendors](https://github.com/amar512-prog/VMS/blob/main/image.png)

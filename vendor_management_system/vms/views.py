@@ -18,6 +18,12 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 def obtain_auth_token(request):
+    """
+    Function to authenticate and generate token for a user.
+
+    :param request: HTTP request object
+    :return: JSON response with token or error message
+    """
     username = 'admin'
     password = 'admin'
     
@@ -36,6 +42,12 @@ def obtain_auth_token(request):
         print(f"Token: {token.key}")
         return JsonResponse({'token': str(token.key)}, status=status.HTTP_200_OK)
 def index(request):
+    """
+    Function returning a simple HTTP response.
+
+    :param request: HTTP request object
+    :return: HTTP response
+    """
     return HttpResponse("Hello, world!!!")
 
 
@@ -48,6 +60,12 @@ class VendorViewSet(viewsets.ViewSet):
     
     permission_classes = (IsAuthenticated,)
     def create(self, request):
+        """
+        Create a new vendor.
+
+        :param request: HTTP request object
+        :return: Response with created vendor data or error messages
+        """
         #print(request, request.data)
         serializer = VendorSerializer(data=request.data)
         if serializer.is_valid():
@@ -58,11 +76,24 @@ class VendorViewSet(viewsets.ViewSet):
     
     
     def list(self, request):
+        """
+        Retrieve a list of all vendors.
+
+        :param request: HTTP request object
+        :return: Response with a list of vendors or error messages
+        """
         queryset = Vendor.objects.all()
         serializer = VendorSerializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def retrieve(self, request, pk=None):
+        """
+        Retrieve details of a specific vendor.
+
+        :param request: HTTP request object
+        :param pk: Primary key of the vendor
+        :return: Response with vendor details or error messages
+        """
         #print(request, pk)
         try:
             vendor = Vendor.objects.get(vendor_code=pk)
@@ -73,6 +104,13 @@ class VendorViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def update(self, request, pk=None):
+        """
+        Update details of a specific vendor.
+
+        :param request: HTTP request object
+        :param pk: Primary key of the vendor to be updated
+        :return: Response with updated vendor data or error messages
+        """
         try:
             vendor = Vendor.objects.get(vendor_code=pk)
         except Vendor.DoesNotExist:
@@ -85,6 +123,13 @@ class VendorViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def destroy(self, request, pk=None):
+        """
+        Delete a specific vendor.
+
+        :param request: HTTP request object
+        :param pk: Primary key of the vendor to be deleted
+        :return: Response confirming deletion or error messages
+        """
         try:
             vendor = Vendor.objects.get(vendor_code=pk)
         except Vendor.DoesNotExist:
@@ -96,6 +141,12 @@ class VendorViewSet(viewsets.ViewSet):
 class PurchaseOrderViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
     def create(self, request):
+        """
+        Create a new purchase order.
+
+        :param request: HTTP request object
+        :return: Response with created purchase order data or error messages
+        """
         serializer = PurchaseOrderSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -103,6 +154,12 @@ class PurchaseOrderViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def list(self, request):
+        """
+        Retrieve a list of all purchase orders.
+
+        :param request: HTTP request object
+        :return: Response with a list of purchase orders or error messages
+        """
         vendor_id = request.query_params.get('vendor')  # Get the vendor ID from query parameters if provided
         if vendor_id:
             purchase_orders = PurchaseOrder.objects.filter(vendor=vendor_id)
@@ -113,6 +170,13 @@ class PurchaseOrderViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def retrieve(self, request, pk=None):
+        """
+        Retrieve details of a specific purchase order.
+
+        :param request: HTTP request object
+        :param pk: PO number of the purchase order
+        :return: Response with purchase order details or error messages
+        """
         try:
             purchase_order = PurchaseOrder.objects.get(po_number=pk)
         except PurchaseOrder.DoesNotExist:
@@ -122,6 +186,13 @@ class PurchaseOrderViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
     def update(self, request, pk=None):
+        """
+        Update details of a specific purchase order.
+
+        :param request: HTTP request object
+        :param pk: PO number of the purchase order to be updated
+        :return: Response with updated purchase order data or error messages
+        """
         try:
             purchase_order = PurchaseOrder.objects.get(po_number=pk)
         except PurchaseOrder.DoesNotExist:
@@ -134,6 +205,13 @@ class PurchaseOrderViewSet(viewsets.ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk=None):
+        """
+        Delete a specific purchase order.
+
+        :param request: HTTP request object
+        :param pk: PO number of the purchase order to be deleted
+        :return: Response confirming deletion or error messages
+        """
         try:
             purchase_order = PurchaseOrder.objects.get(po_number=pk)
         except PurchaseOrder.DoesNotExist:
@@ -142,6 +220,13 @@ class PurchaseOrderViewSet(viewsets.ViewSet):
         purchase_order.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
     def acknowledge(self, request, po_number=None):
+         """
+        Acknowledge a purchase order.
+
+        :param request: HTTP request object
+        :param po_number: PO number of the purchase order to be acknowledged
+        :return: Response confirming acknowledgment or error messages
+        """
         #try:
         purchase_order = PurchaseOrder.objects.get(po_number=po_number)
         if purchase_order.status == 'pending':
@@ -160,6 +245,14 @@ class PurchaseOrderViewSet(viewsets.ViewSet):
 
 @receiver(post_save, sender=PurchaseOrder)
 def update_on_time_delivery_rate(sender, instance, created, **kwargs):
+    """
+    Function to update on-time delivery rate and other metrics upon changes in PurchaseOrder model.
+
+    :param sender: Sender of the signal
+    :param instance: Instance of the PurchaseOrder model
+    :param created: Boolean value indicating if the instance was created or updated
+    :param kwargs: Additional keyword arguments
+    """
     #current_time = timezone.make_aware(datetime.now(), timezone.get_current_timezone())
     current_time = timezone.localtime(timezone.now()+timezone.timedelta(hours=5,minutes=30)) 
     if instance.status == 'completed':
@@ -274,6 +367,13 @@ def update_on_time_delivery_rate(sender, instance, created, **kwargs):
 class VendorPerformanceViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
     def retrieve(self, request, pk=None):
+        """
+        Retrieve vendor performance metrics.
+
+        :param request: HTTP request object
+        :param pk: Primary key of the vendor
+        :return: Response with vendor performance metrics or error message
+        """
         try:
             historical_performance = HistoricalPerformance.objects.get(vendor=pk)
             print(historical_performance)

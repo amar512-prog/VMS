@@ -13,13 +13,17 @@ conda activate vendor_env
 # Install packages within the Conda environment
 pip install -r requirements.txt
 ```
-### Step 3: Create a Django Project and App
-```bash
-# Create a Django project
-django-admin startproject vendor_management_system
-# Navigate to the project directory
-cd vendor_management_system
 
-# Create a Django app for managing vendors and purchase orders
-python manage.py startapp vms
+### Step 3: create certificate for https, config,bat to get IP  (tested on windows)
+```bash
+certification.bat
+config.bat
 ```
+
+### Step 4: run server
+```bash
+runpy.bat
+```
+
+### visit https://<ip>:8000/vms/api/vendors
+![vendors](https://github.com/amar512-prog/VMS/blob/main/out.png)

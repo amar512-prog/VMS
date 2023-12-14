@@ -102,5 +102,28 @@ X-Frame-Options: DENY
     }
 ]
 ```
+```bash
+(env)PS E:\VMS\vendor_management_system> http  --verify="$(mkcert --CAROOT)/rootCA.pem"  https://192.168.214.220:8000/vms/api/vendors/VENDOR123/performance/ "Authorization: token 24abc0e7214a2c50d81bfdb575129c61e1ff7e24"
+HTTP/1.1 200 OK
+Allow: GET, HEAD, OPTIONS
+Connection: close
+Content-Length: 179
+Content-Type: application/json
+Cross-Origin-Opener-Policy: same-origin
+Date: Thu, 14 Dec 2023 19:44:54 GMT
+Referrer-Policy: same-origin
+Server: Werkzeug/3.0.1 Python/3.12.0
+Vary: Accept
+X-Content-Type-Options: nosniff
+X-Frame-Options: DENY
 
+{
+    "average_response_time": 44523.130812,
+    "date": "2023-12-15T04:22:03.260137+05:30",
+    "fulfillment_rate": 0.0,
+    "on_time_delivery_rate": 100.0,
+    "quality_rating_avg": 4.5,
+    "vendor": "VENDOR123"
+}
+```
 

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 # Create your views here.
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from django.db.models.signals import post_save
@@ -20,15 +20,21 @@ from rest_framework.authtoken.models import Token
 def obtain_auth_token(request):
     username = 'admin'
     password = 'admin'
-    user = None
-    if not User.objects.filter(username=username).exists():
-        # Create a new user
-        user = User.objects.create_user(username=username, password=password)
-    else:
+    
+    try:
         user = User.objects.get(username=username)
-    token = Token.objects.create(user=user)
-    print(f"Token:{token.key}")
-    return { 'token' : token.key}
+        token = Token.objects.get(user=user)
+        print(f"Token: {token.key}")
+        return JsonResponse({'token': token.key}, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        user = User.objects.create_user(username=username, password=password)
+        token = Token.objects.create(user=user)
+        print(f"Token: {token.key}")
+        return JsonResponse({'token': token.key}, status=status.HTTP_200_OK)
+    except Token.DoesNotExist:
+        token = Token.objects.create(user=user)
+        print(f"Token: {token.key}")
+        return JsonResponse({'token': str(token.key)}, status=status.HTTP_200_OK)
 def index(request):
     return HttpResponse("Hello, world!!!")
 
@@ -39,6 +45,8 @@ def index(request):
     
 
 class VendorViewSet(viewsets.ViewSet):
+    
+    permission_classes = (IsAuthenticated,)
     def create(self, request):
         #print(request, request.data)
         serializer = VendorSerializer(data=request.data)

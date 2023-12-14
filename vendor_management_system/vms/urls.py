@@ -22,5 +22,5 @@ urlpatterns = [
     path('api/purchase_orders/<str:po_number>/', PurchaseOrderViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}), name='purchaseorder-detail'),
     path('api/vendors/<str:pk>/performance/', VendorPerformanceViewSet.as_view({'get': 'retrieve'}), name='vendor_performance'),
     path('api/purchase_orders/<str:po_number>/acknowledge', PurchaseOrderViewSet.as_view({'post': 'acknowledge'}), name='purchase-acknowledge'),
-    #path('api-token-auth/', views.obtain_auth_token)
+    path('api-token-auth/', views.obtain_auth_token)
 ]

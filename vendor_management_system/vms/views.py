@@ -94,6 +94,7 @@ class VendorViewSet(viewsets.ViewSet):
         return Response({"success": "Vendor deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
     
 class PurchaseOrderViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated,)
     def create(self, request):
         serializer = PurchaseOrderSerializer(data=request.data)
         if serializer.is_valid():
@@ -271,6 +272,7 @@ def update_on_time_delivery_rate(sender, instance, created, **kwargs):
     historical_performance.save()
     
 class VendorPerformanceViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated,)
     def retrieve(self, request, pk=None):
         try:
             historical_performance = HistoricalPerformance.objects.get(vendor=pk)
